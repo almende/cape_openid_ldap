@@ -17,21 +17,21 @@
  */
 $GLOBALS['ldap'] = array (
 	# Connection settings
-	'primary'		=> '10.0.0.111',
-	'fallback'		=> '10.0.0.222',
+	'primary'		=> '127.0.0.1',
+	'fallback'		=> '127.0.0.1',
 	'protocol'		=> 3,
 	# AD specific
-	'isad'			=> true, // are we connecting to Active Directory?
-	'lookupcn'		=> true, // should we extract CN after the search?
+	'isad'			=> false, // are we connecting to Active Directory?
+	'lookupcn'		=> false, // should we extract CN after the search?
 	# Binding account
-	'binddn'		=> 'cn=<name>,cn=users,dc=domain,dc=local',
-	'password'		=> '<pass>',
+	'binddn'		=> 'cn=admin,dc=cape,dc=almende,dc=org',
+	'password'		=> '##########', //TODO: replace with real password!
 	# User account
-	'autodn'		=> false, // extract DN from search result, ignore 'testdn'
-	'testdn'		=> 'cn=%s,cn=users,dc=domain,dc=local',
+	'autodn'		=> true, // extract DN from search result, ignore 'testdn'
+	'testdn'		=> 'ou=Users,dc=cape,dc=almende,dc=org',
 	# Searching data
-	'searchdn'		=> 'cn=users,dc=domain,dc=local',
-	'filter'		=> '(&(objectCategory=user)(mail=*)(sAMAccountName=%s))',
+	'searchdn'		=> 'ou=%s_Users,dc=cape,dc=almende,dc=org',
+	'filter'		=> '(&(objectClass=inetOrgPerson)(uid=%s))',
 
 	# SREG names matching to LDAP attribute names
 	'nickname'		=> 'uid',
@@ -47,7 +47,7 @@ $GLOBALS['ldap'] = array (
 	# Default SREG values (default server settings)
 	'def_language'		=> 'en',
 	'def_postcode'		=> '1000',
-	'def_timezone'		=> 'Europe/Sofia'
+	'def_timezone'		=> 'Europe/Amsterdam'
 );
 
 
@@ -55,7 +55,7 @@ $GLOBALS['ldap'] = array (
  * Search for LDAP account by username. Populate $sreg if found
  * string $username
  */
-function find_ldap ($username) {
+function find_ldap ($username,$domain) {
 	global $sreg, $ldap, $profile;
 
         $no = "no";
@@ -68,7 +68,7 @@ function find_ldap ($username) {
 			if ($ldap['isad'] == true) ldap_set_option($ds,LDAP_OPT_REFERRALS,0);
 
                         $r = ldap_bind($ds,$ldap['binddn'],$ldap['password']);
-            		$sr = ldap_search($ds,$ldap['searchdn'],sprintf($ldap['filter'],$username));
+            		$sr = ldap_search($ds,sprintf($ldap['searchdn'],$domain),sprintf($ldap['filter'],$username));
 			$info = ldap_get_entries($ds, $sr);
 
                         if ($info["count"] == 1) {

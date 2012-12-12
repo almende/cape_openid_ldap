@@ -12,7 +12,7 @@
 
 // Get username from request URL. Remove any leading /
 $userid = ltrim($_REQUEST['user'],'/');
-
+$domain = ltrim($_REQUEST['domain'],'/');
 /**
  * User profile
  * @name $profile
@@ -28,9 +28,9 @@ $GLOBALS['profile'] = array(
 #	'pavatar'	=>	'http://your.site.com/path/pavatar.img',
 
 	# Advanced Config - Please see README before setting these
-#	'allow_gmp'	=>	false,
+	'allow_gmp'	=>	true,
 #	'allow_test'	=> 	false,
-#	'auth_realm'	=>	'OpenID',
+	'auth_realm'	=>	'Almende',
 #	'force_bigmath'	=>	false,
 #	'idp_url'	=>	'http://your.site.com/path',
 #	'lifetime'	=>	1440,
@@ -38,9 +38,9 @@ $GLOBALS['profile'] = array(
 #	'force_ssl'	=>	false, # EXPERIMENTAL
 
 	# Logging Config - Please see README before setting these
-#	'debug'		=>	false,
-#	'authlog'	=>	false,
-#	'logfile'	=>	'/var/log/openid'
+#	'debug'		=>	true,
+#	'authlog'	=>	true,
+#	'logfile'	=>	'/tmp/openid'
 );
 
 /**
@@ -78,7 +78,7 @@ $GLOBALS['html'] = array (
 
 
 require('ldap.php');
-find_ldap($userid); // lookup user and populate sreg info
+find_ldap($userid,$domain); // lookup user and populate sreg info
 
 require('engine.php');
 ?>
